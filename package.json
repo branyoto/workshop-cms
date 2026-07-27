@@ -1,0 +1,15 @@
+{
+  "name": "workshop-cms",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "validate:cms": "node scripts/validate-cms.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "packageManager": "yarn@4.17.0"
+}

@@ -7,9 +7,9 @@ import addFormats from 'ajv-formats';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');
-const cmsPath = join(rootDir, 'public', 'cms.json');
+const cmsPath = join(rootDir, 'cms.json');
 const schemaPath = join(rootDir, 'schemas', 'cms.schema.json');
-const imagesDir = join(rootDir, 'public', 'images');
+const imagesDir = join(rootDir, 'images');
 
 function fail(message) {
   console.error(message);
