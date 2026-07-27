@@ -1,0 +1,62 @@
+name: Validate and publish CMS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'cms.json'
+      - 'images/**'
+      - 'schemas/cms.schema.json'
+      - 'scripts/validate-cms.mjs'
+      - '.github/workflows/validate-cms.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-cms
+  cancel-in-progress: false
+
+jobs:
+  publish-cms:
+    name: Validate and publish CMS content
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - run: npm install -g corepack
+      - run: corepack enable
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+
+      - name: Validate cms.json and image thumbnails
+        run: yarn validate:cms
+
+      - name: Purge jsDelivr cache
+        if: steps.push.outputs.pushed == 'true'
+        run: |
+          set -euo pipefail
+          for target in cms.json cms.schema.json images/; do
+            url="https://purge.jsdelivr.net/gh/branyoto/workshop-cms@main/${target}"
+            echo "Purging ${url}"
+            response="$(curl --fail-with-body -sS "$url")"
+            echo "$response"
+            echo "$response" | node -e "
+              const input = require('fs').readFileSync(0, 'utf8');
+              const payload = JSON.parse(input);
+              if (payload.status !== 'finished') {
+                console.error('::error::jsDelivr purge did not finish successfully');
+                process.exit(1);
+              }
+            "
+          done

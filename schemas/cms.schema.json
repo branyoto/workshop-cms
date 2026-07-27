@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/branyoto/workshop/schemas/cms.schema.json",
+  "title": "CmsContent",
+  "type": "object",
+  "required": [
+    "settings",
+    "categories",
+    "items",
+    "featuredCategoryIds",
+    "featuredItemIds",
+    "contact",
+    "legalLinks"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "settings": { "$ref": "#/$defs/settings" },
+    "categories": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/categoryView" }
+    },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/item" }
+    },
+    "featuredCategoryIds": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "featuredItemIds": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/localizedText" }
+    },
+    "colors": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/localizedText" }
+    },
+    "contact": { "$ref": "#/$defs/contactContent" },
+    "legalLinks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/legalLink" }
+    }
+  },
+  "$defs": {
+    "localizedText": {
+      "type": "object",
+      "required": ["fr"],
+      "additionalProperties": false,
+      "properties": {
+        "fr": { "type": "string", "minLength": 1 },
+        "en": { "type": "string" }
+      }
+    },
+    "settings": {
+      "type": "object",
+      "required": ["artistEmail", "adminEmails", "socialLinks"],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^//": {}
+      },
+      "properties": {
+        "artistEmail": { "type": "string", "format": "email" },
+        "adminEmails": {
+          "type": "array",
+          "items": { "type": "string", "format": "email" }
+        },
+        "socialLinks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/socialLink" }
+        },
+        "address": { "$ref": "#/$defs/localizedText" },
+        "mapUrl": { "type": "string", "format": "uri" }
+      }
+    },
+    "socialLink": {
+      "type": "object",
+      "required": ["type", "url"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["instagram", "facebook", "website"]
+        },
+        "url": { "type": "string", "format": "uri" }
+      }
+    },
+    "categoryView": {
+      "type": "object",
+      "required": ["id", "name", "tags"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "$ref": "#/$defs/localizedText" },
+        "description": { "$ref": "#/$defs/localizedText" },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/categoryView" }
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": ["id", "title", "price", "tags", "available"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "$ref": "#/$defs/localizedText" },
+        "description": { "$ref": "#/$defs/localizedText" },
+        "price": { "type": "number", "minimum": 0 },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "available": { "type": "boolean" },
+        "characteristics": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "dimension": { "type": "string" },
+            "colors": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "weight": { "type": "string" },
+            "material": { "type": "string" }
+          }
+        }
+      }
+    },
+    "contactContent": {
+      "type": "object",
+      "required": ["bio", "markets"],
+      "additionalProperties": false,
+      "properties": {
+        "bio": { "$ref": "#/$defs/localizedText" },
+        "categoriesOverview": { "$ref": "#/$defs/localizedText" },
+        "markets": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/marketDate" }
+        }
+      }
+    },
+    "marketDate": {
+      "type": "object",
+      "required": ["date", "location"],
+      "additionalProperties": false,
+      "properties": {
+        "date": { "type": "string", "format": "date" },
+        "location": { "$ref": "#/$defs/localizedText" },
+        "description": { "$ref": "#/$defs/localizedText" },
+        "url": { "type": "string", "format": "uri" }
+      }
+    },
+    "legalLink": {
+      "type": "object",
+      "required": ["key", "url"],
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string",
+          "enum": ["cgv", "cgu"]
+        },
+        "url": { "type": "string", "format": "uri-reference" }
+      }
+    }
+  }
+}
